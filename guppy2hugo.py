@@ -24,6 +24,7 @@ def cleanPathElement(html):
     resu = resu.replace(' ','_')
     resu = resu.replace('"','')
     resu = resu.replace(',','')
+    resu = resu.replace('.','')
     resu = resu.replace('\'','_')
     resu = resu.replace('?','')
     resu = resu.replace('!','')
@@ -37,6 +38,7 @@ def cleanPathElement(html):
     resu = resu.replace('à','a')
     resu = resu.replace('â','a')
     resu = resu.replace('ô','o')
+    resu = resu.replace('ò','o')
     resu = resu.replace('ü','u')
     resu = resu.replace('ï','i')
     resu = resu.replace('î','i')
@@ -122,6 +124,7 @@ class GuppyDoc:
         self.tagsEn = []
         self.categories = []
         self.targetPath = Path(CONTENT_PATH)
+        self.relPath = Path()
         self.hasYoutube = False
         self.hasLink = False
         self.hasPhotorama = False
@@ -136,7 +139,7 @@ class GuppyDoc:
         if '<a ' in html:
             self.hasLink = True
         videos = []
-        for m in re.finditer('<iframe.*?youtube\.com\/(\w+?\/)+?(\w+).*?iframe>', html):
+        for m in re.finditer('<iframe.*?youtube\.com\/(\w+?\/)+?([\w_\-]+).*?iframe>', html):
             self.hasYoutube = True
             videos.append((m.group(0), m.group(2)))
         # keep youtube iframes as text (html2txt would remove them)
@@ -148,7 +151,7 @@ class GuppyDoc:
 
     def insertYoutube(self, md):
         videos = []
-        for m in re.finditer('youtube_(\w+)', md):
+        for m in re.finditer('youtube_([\w_\-]+)', md):
             videos.append((m.group(0), m.group(1)))
         for v in videos:
             md = md.replace(v[0], f"{{{{< youtube {v[1]} >}}}}")
@@ -207,11 +210,10 @@ class GuppyDoc:
             self.mdEn = self.mdEn.replace(r.relPath, '')
 
     def findTagsAndCategories(self):
-        contentIx = self.targetPath._parts.index('content')
-        if len(self.targetPath._parts)>=contentIx+2:
-            self.categories.append(self.targetPath._parts[contentIx+1].replace('_',' '))
-        if len(self.targetPath._parts)>=contentIx+3:
-            self.categories.append(self.targetPath._parts[contentIx+2].replace('_',' '))
+        if len(self.relPath._parts)>=2:
+            self.categories.append(self.relPath._parts[1].replace('_',' '))
+        if len(self.relPath._parts)>=3:
+            self.categories.append(self.relPath._parts[2].replace('_',' '))
         with open(Path(DATA_PATH) / "dbdocs/index/kw.dtb", encoding="utf8") as f:
             docs = [l.split('||') for l in f.readlines()]
         doc = next((d for d in docs if int(d[0])==self.num), [])
@@ -248,6 +250,7 @@ class Article(GuppyDoc):
         self.mdEn = self.insertYoutube(self.mdEn)
         self.findPageResources()
         self.getMenuTree()
+        self.targetPath /= self.relPath
         self.useResourcesLocally()
         self.findTagsAndCategories()
         self.createHugoPageBundle()
@@ -266,17 +269,17 @@ class Article(GuppyDoc):
                 menul2l3 = menu[6].split('|')
                 self.menuLevel2En = menul2l3[0]
                 self.menuLevel3En =  menul2l3[1] if len(menul2l3)>1 else ''
-                self.targetPath /= cleanPathElement(self.menuLevel1Fr)
-                self.targetPath /= cleanPathElement(self.menuLevel2Fr)
+                self.relPath /= cleanPathElement(self.menuLevel1Fr)
+                self.relPath /= cleanPathElement(self.menuLevel2Fr)
                 if self.menuLevel3Fr:
-                    self.targetPath /= cleanPathElement(self.menuLevel3Fr)
-                self.targetPath /= title2Folder(self.titleFr)
+                    self.relPath /= cleanPathElement(self.menuLevel3Fr)
+                self.relPath /= title2Folder(self.titleFr)
                 return
         # articles with no menu
-        self.targetPath /= "orphan_articles"
+        self.relPath /= "orphan_articles"
 
     def __str__(self):
-        s = f"{self.num};{self.titleFr};{self.targetPath};{len(self.resources)};"
+        s = f"{self.num};{self.titleFr};{self.relPath};{len(self.resources)};"
         s += f"{'youtube'if self.hasYoutube else '       '};"
         s += f"{'links'if self.hasLink else '     '};"
         s += f"{'photorama'if self.hasPhotorama else '        '};"
@@ -302,14 +305,71 @@ class News(GuppyDoc):
         self.mdFr = self.insertYoutube(self.mdFr)
         self.mdEn = self.insertYoutube(self.mdEn)
         self.findPageResources()
-        self.targetPath /= 'blog'
-        self.targetPath /= title2Folder(self.titleFr)
+        self.relPath /= 'blog'
+        self.relPath /= title2Folder(self.titleFr)
+        self.targetPath /= self.relPath
         self.useResourcesLocally()
         self.createHugoPageBundle()
         self.moveResources()
 
     def __str__(self):
-        s = f"{self.num};{self.titleFr};{self.targetPath};{len(self.resources)};"
+        s = f"{self.num};{self.titleFr};{self.relPath};{len(self.resources)};"
+        s += f"{'youtube'if self.hasYoutube else '       '};"
+        s += f"{'links'if self.hasLink else '     '};"
+        s += f"{'photorama'if self.hasPhotorama else '        '};"
+        s += f"{'slideshow'if self.hasSlideshow else '         '};"
+        s += f"{'audio'if self.hasAudio else '     '};"
+        return(s)
+
+
+class Download(GuppyDoc):
+    def __init__(self, indexLine):
+        super().__init__()
+        elements = indexLine.split('||')
+        self.titleFr = cleanHtml(elements[2])
+        self.titleEn = cleanHtml(elements[3])
+        self.num = int(elements[4])
+        self.incFile = IncFile(self.num)
+        self.date = self.incFile.modDate
+        self.htmlFr = self.incFile.fields["fieldc1"].txt
+        self.htmlFr = self.inspectHtml(self.htmlFr)
+        self.htmlEn = self.incFile.fields["fieldc2"].txt
+        self.htmlEn = self.inspectHtml(self.htmlEn)
+        self.mdFr = html2text.html2text(self.htmlFr)
+        self.mdEn = html2text.html2text(self.htmlEn)
+        self.mdFr = self.insertYoutube(self.mdFr)
+        self.mdEn = self.insertYoutube(self.mdEn)
+        self.findPageResources()
+        self.dlFr =  self.incFile.fields["fieldd1"].txt
+        self.dlEn =  self.incFile.fields["fieldd2"].txt
+        file = self.addDownloadRessources(self.dlFr)
+        self.mdFr += f"\n---\nPour télécharger ce fichier : [{file}]({file})\nCreative Commons BY-NC-SA license.\n---"
+        file = self.addDownloadRessources(self.dlEn)
+        self.mdEn += f"\n---\nTo download this file : [{file}]({file})\nCreative Commons BY-NC-SA license.\n---"
+        self.relPath /= 'downloads'
+        self.relPath /= title2Folder(self.titleFr)
+        self.targetPath /= self.relPath
+        self.useResourcesLocally()
+        self.addCategories()
+        self.createHugoPageBundle()
+        self.moveResources()
+
+    def addDownloadRessources(self, f):
+        fpath = f.split('||')[0]
+        file = os.path.basename(fpath)
+        path = os.path.dirname(fpath)
+        self.resources.append(GuppyDoc.Resource(path, file))
+        return file
+
+    def addCategories(self):
+        self.categories.append("Download")
+        self.categories.append(self.incFile.fields["fielda1"].txt)
+        self.categories.append(self.incFile.fields["fielda2"].txt)
+
+
+
+    def __str__(self):
+        s = f"{self.num};{self.titleFr};{self.relPath};{len(self.resources)};"
         s += f"{'youtube'if self.hasYoutube else '       '};"
         s += f"{'links'if self.hasLink else '     '};"
         s += f"{'photorama'if self.hasPhotorama else '        '};"
@@ -326,6 +386,9 @@ with open(Path(DATA_PATH) / "dbdocs/index/ar.dtb", encoding="utf8") as f:
 with open(Path(DATA_PATH) / "dbdocs/index/ne.dtb", encoding="utf8") as f:
     news = [News(l) for l in f.readlines()]
 
+with open(Path(DATA_PATH) / "dbdocs/index/dn.dtb", encoding="utf8") as f:
+    downloads = [Download(l) for l in f.readlines()]
+
 print("*** Articles ***")
 for a in articles:
     print(a)
@@ -333,3 +396,7 @@ for a in articles:
 print("*** News ***")
 for n in news:
     print(n)
+
+print("*** Downloads ***")
+for d in downloads:
+    print(d)
