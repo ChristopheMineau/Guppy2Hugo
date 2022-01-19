@@ -343,9 +343,9 @@ class Download(GuppyDoc):
         self.dlFr =  self.incFile.fields["fieldd1"].txt
         self.dlEn =  self.incFile.fields["fieldd2"].txt
         file = self.addDownloadRessources(self.dlFr)
-        self.mdFr += f"\n---\nPour télécharger ce fichier : [{file}]({file})\nCreative Commons BY-NC-SA license.\n---"
+        self.mdFr += f'\n{{{{% download file="{file}" lang="fr" %}}}}\n'
         file = self.addDownloadRessources(self.dlEn)
-        self.mdEn += f"\n---\nTo download this file : [{file}]({file})\nCreative Commons BY-NC-SA license.\n---"
+        self.mdEn += f'\n{{{{% download file="{file}" lang="en" %}}}}\n'
         self.relPath /= 'downloads'
         self.relPath /= title2Folder(self.titleFr)
         self.targetPath /= self.relPath
