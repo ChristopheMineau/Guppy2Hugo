@@ -26,6 +26,7 @@ def cleanPathElement(html):
     resu = resu.replace(',','')
     resu = resu.replace('.','')
     resu = resu.replace('\'','_')
+    resu = resu.replace('°','_')
     resu = resu.replace('?','')
     resu = resu.replace('!','')
     resu = resu.replace(':','_')
@@ -51,6 +52,31 @@ def title2Folder(title):
     resu = cleanPathElement(title)
     resu = camel_case(resu)
     return resu
+
+def fixLinks(docList, linkDict):
+    def replaceLink(md, linkDict):
+        resu = md
+        for m in re.finditer('\([a-z]+\.php.*?&pg=(\d+).*?\)', md):
+            docId = int(m.group(1))
+            guppyLink = m.group(0)
+            if docId in linkDict:
+                resu = resu.replace(guppyLink, f"({linkDict[docId]})")
+        return resu
+
+    for d in docList:
+        d.mdEn = replaceLink(d.mdEn, linkDict)
+        d.mdFr = replaceLink(d.mdFr, linkDict)
+        d.createHugoPageBundle()
+            
+                    
+
+
+def getDocUris(docList):
+    linkDict = dict()
+    for d in docList:
+        linkDict[d.num] = '/' + str(d.relPath).replace('\\','/').lower()
+    return linkDict
+
 
 class IncFile:
     class Field:
@@ -134,8 +160,6 @@ class GuppyDoc:
     def inspectHtml(self, html):
         if 'photorama' in html:
             self.hasPhotorama = True
-        if 'audio' in html:
-            self.hasAudio = True
         if '<a ' in html:
             self.hasLink = True
         videos = []
@@ -147,6 +171,15 @@ class GuppyDoc:
             html = html.replace(v[0], f" youtube_{v[1]} ")
         if 'data-image' in html:
             self.hasSlideshow = True
+        audios = []
+        for m in re.finditer('<audio(.|\n)*?src=\\\"((.|\n)*?)\\\"(.|\n)*?\/audio>|\n]', html, re.MULTILINE):
+            self.hasAudio = True
+            path = os.path.dirname(m.group(2)) + '/'
+            file = os.path.basename(m.group(2))
+            self.resources.append(GuppyDoc.Resource(path, file))
+            audios.append((m.group(0), file))
+        for a in audios:
+            html = html.replace(a[0], f" audio_{a[1]} ")
         return html
 
     def insertYoutube(self, md):
@@ -157,6 +190,13 @@ class GuppyDoc:
             md = md.replace(v[0], f"{{{{< youtube {v[1]} >}}}}")
         return md
 
+    def insertAudio(self, md):
+        audios = []
+        for m in re.finditer('audio_([\w_\-]+\.mp3)', md):
+            audios.append((m.group(0), m.group(1)))
+        for a in audios:
+            md = md.replace(a[0], f"{{{{< audio mp3=\"{a[1]}\" >}}}}")
+        return md
               
     def createHugoPageBundle(self):
         os.makedirs(self.targetPath, exist_ok=True)
@@ -188,6 +228,8 @@ class GuppyDoc:
             f.write(f'{self.mdEn}\n')
 
     def findPageResources(self):
+        if 'larinette' in self.titleFr:
+            debug=1
         for m in re.finditer('\(((\w+\/)*?)([\w\.]+\.(JPG|jpg|Jpg|PNG|png|Png|gif|GIF|Gif))\)', self.mdFr):
             self.resources.append(self.Resource(m.group(1), m.group(3)))
         # identify featured image
@@ -195,10 +237,8 @@ class GuppyDoc:
         if m:
             self.featuredImage = m.group(3)
         else:
-            if len(self.resources)>0:
-               self.featuredImage =  self.resources[0].file
-            else:
-                self.featuredImage = ""
+            self.featuredImage = next((r.file for r in self.resources if re.search('\.(JPG|jpg|Jpg|PNG|png|Png|gif|GIF|Gif)', r.file)), '')
+
 
     def moveResources(self):
         for r in self.resources:
@@ -248,6 +288,8 @@ class Article(GuppyDoc):
         self.mdEn = html2text.html2text(self.htmlEn)
         self.mdFr = self.insertYoutube(self.mdFr)
         self.mdEn = self.insertYoutube(self.mdEn)
+        self.mdFr = self.insertAudio(self.mdFr)
+        self.mdEn = self.insertAudio(self.mdEn)
         self.findPageResources()
         self.getMenuTree()
         self.targetPath /= self.relPath
@@ -388,6 +430,10 @@ with open(Path(DATA_PATH) / "dbdocs/index/ne.dtb", encoding="utf8") as f:
 
 with open(Path(DATA_PATH) / "dbdocs/index/dn.dtb", encoding="utf8") as f:
     downloads = [Download(l) for l in f.readlines()]
+
+# Set the correct links, relative to the site
+uriDict = getDocUris(articles + news + downloads)
+fixLinks(articles + news + downloads, uriDict)
 
 print("*** Articles ***")
 for a in articles:
