@@ -8,6 +8,7 @@ import shutil
 
 DATA_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/data"
 FILE_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/file"
+PHOTO_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/photo"
 SOURCE_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/"
 IMG_PATH = "C:/Users/Papou/Documents/www/Hugo/Sites/LaBelleNote/static/img"
 CONTENT_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/content"
@@ -420,16 +421,47 @@ class Download(GuppyDoc):
         return(s)
 
 
+class Galery:
+    class Photo:
+        def __init__(self, dtbLine):
+            elements = dtbLine.split('||')
+            self.num = elements[0]
+            self.file = elements[2]
+            self.w = int(elements[7])
+            self.h = int(elements[8])
+            self.captionFr = elements[5]
+            self.captionEn = elements[6]
+
+    def __init__(self, indexLine):
+        elements = indexLine.split('||')
+        self.categoryFr = cleanHtml(elements[0])
+        self.categoryEn = cleanHtml(elements[1])
+        self.titleFr = cleanHtml(elements[2])
+        self.titleEn = cleanHtml(elements[3])
+        self.num = int(elements[4])
+        creadateMatch = re.search(r'^\$creadate = \'(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)', elements[5])
+        if creadateMatch:
+            self.date = f"{creadateMatch.group(1)}-{creadateMatch.group(2)}-{creadateMatch.group(3)}T{creadateMatch.group(4)}:{creadateMatch.group(5)}:00+01:00"
+        self.sourcePath = Path(PHOTO_PATH) / f'gal_{self.num}'
+        assert os.path.isdir(self.sourcePath), f"The Galery folder does not exist : {self.sourcePath}"
+        with open(self.sourcePath / f'gal_{self.num}.dtb', encoding="utf8") as f:
+            self.photos = [Galery.Photo(l) for l in f.readlines()]
+        pass
+
+################# main ###################
 #
 # navigate through the index folder
-with open(Path(DATA_PATH) / "dbdocs/index/ar.dtb", encoding="utf8") as f:
+""" with open(Path(DATA_PATH) / "dbdocs/index/ar.dtb", encoding="utf8") as f:
     articles = [Article(l) for l in f.readlines()]
 
 with open(Path(DATA_PATH) / "dbdocs/index/ne.dtb", encoding="utf8") as f:
     news = [News(l) for l in f.readlines()]
 
 with open(Path(DATA_PATH) / "dbdocs/index/dn.dtb", encoding="utf8") as f:
-    downloads = [Download(l) for l in f.readlines()]
+    downloads = [Download(l) for l in f.readlines()] """
+
+with open(Path(DATA_PATH) / "dbdocs/index/ph.dtb", encoding="utf8") as f:
+    galeries = [Galery(l) for l in f.readlines()]
 
 # Set the correct links, relative to the site
 uriDict = getDocUris(articles + news + downloads)

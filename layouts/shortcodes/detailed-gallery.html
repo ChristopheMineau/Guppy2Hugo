@@ -1,0 +1,46 @@
+<!--
+Put this file in /layouts/shortcodes/gallery.html
+Inspired from  https://github.com/liwenyip/hugo-easy-gallery/
+Modified to work with page bundles by C.Mineau
+
+This shortcode generates a gallery with the given pictures between  detailed-gallery and /detailed-gallery.
+usage : 
+{ {< detailed-gallery [param="val"] >} } 
+	{ {< figure ..title ... caption... >} }  : see the figure shortcode
+	{ {< figure ..title ... caption... >} }
+{ {< /detailed-gallery >} }
+
+possible parameters :
+
+    caption-position - determines the captions’ position over the image. Options:
+        bottom (default)
+        center
+        none hides captions on the page (they will only show in PhotoSwipe)
+    caption-effect - determines if/how captions appear upon hover. Options:
+        slide (default)
+        fade
+        none (captions always visible)
+    hover-effect - determines if/how images change upon hover. Options:
+        zoom (default)
+        grow
+        shrink
+        slideup
+        slidedown
+        none
+    hover-transition - determines if/how images change upon hover. Options:
+        not set - smooth transition (default)
+        none - hard transition
+
+
+optional thumbnails should be names <image>-thumb.ext 
+-->
+{{- if not (.Page.Scratch.Get "myEasyGalleryCssLoaded") -}}
+   {{- .Page.Scratch.Set "myEasyGalleryCssLoaded" 1 -}}
+   <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+{{- end -}}
+
+<div class="gallery caption-position-{{ with .Get "caption-position" | default "bottom" }}{{.}}{{end}} caption-effect-{{ with .Get "caption-effect" | default "slide" }}{{.}}{{end}} hover-effect-{{ with .Get "hover-effect" | default "zoom" }}{{.}}{{end}} {{ if ne (.Get "hover-transition") "none" }}hover-transition{{end}}" itemscope itemtype="http://schema.org/ImageGallery"> 
+{{- with .Inner -}}
+	{{- . -}}
+{{- end }}
+</div>

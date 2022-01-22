@@ -1,0 +1,11 @@
+{{ $txt := "" }}
+{{ if eq (.Get "lang") "fr"}}
+  {{ $txt = "Pour télécharger ce fichier " }}
+{{ else }}
+  {{ $txt = "To download this file " }}
+{{ end }}
+---
+- {{ $txt }}&emsp; : &emsp; **[{{ .Get "file" }}]({{ .Get "file" }})**  
+[Creative Commons BY-NC-SA license](https://creativecommons.org/licenses/by-nc-sa/4.0/)&emsp; ![BYNCSA](/img/CreativeCommonsBYNCSA.png) 
+&emsp;**Attribution-NonCommercial-ShareAlike**
+---
