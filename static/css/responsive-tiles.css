@@ -1,0 +1,87 @@
+section.cms-boxes .cms-boxes-outer {
+    text-align: left;
+    margin-bottom: 6px;
+    padding: 0 3px;
+}
+
+section.cms-boxes .boxes-align {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+section.cms-boxes .small-box, section.cms-boxes .large-box {
+    max-width: 350px;
+    margin: 0 auto;
+    text-align: center;
+}
+section.cms-boxes .cms-boxes-items h3 {
+    font-size: 35px;
+    color: #fff;
+    font-weight: 400;
+    line-height: 37px;
+    text-align: center;
+    margin: 20px 0 10px;
+    text-transform: uppercase;
+}
+
+section.cms-boxes .cms-boxes-outer .cms-boxes-items {
+	color: #fff;
+    height: 150px;
+    display: table;
+    width: 100%;
+}
+
+section.cms-boxes .cms-boxes-items:hover {
+  opacity: .2;
+  cursor: pointer;
+  color: black;
+}
+
+/*  custom style tiles for LBN */
+/* see palettes https://www.w3schools.com/colors/colors_palettes.asp */
+
+section.cms-boxes .cms-lutherie {
+    background-color: #b70457;
+    background-size: cover;
+}
+
+section.cms-boxes .cms-bois {
+    background-color: #e28743;
+    background-size: cover;
+}
+
+section.cms-boxes .cms-tournage {
+    background-color: #6b5b95;
+    background-size: cover;
+}
+
+section.cms-boxes .cms-cuir {
+    background-color: #feb236;
+    background-size: cover;
+}
+
+section.cms-boxes .cms-metal {
+    background-color: #878f99;
+    background-size: cover;
+}
+
+section.cms-boxes .cms-outils {
+    background-color: #a2836e;
+    background-size: cover;
+}
+
+
+section.cms-boxes .cms-logiciel {
+    background-color: #b5e7a0;
+    background-size: cover;
+}
+
+section.cms-boxes .cms-galeries {
+    background-color: #588c7e;
+    background-size: cover;
+}
+
+section.cms-boxes .cms-blog {
+    background-color: #622569;
+    background-size: cover;
+}

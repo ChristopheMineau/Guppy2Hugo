@@ -57,7 +57,7 @@ def title2Folder(title):
 def fixLinks(docList, linkDict):
     def replaceLink(md, linkDict):
         resu = md
-        for m in re.finditer('\([a-z]+\.php.*?&pg=(\d+).*?\)', md):
+        for m in re.finditer('\(\w+\.php.*?&pg=(\d+).*?\)', md):
             docId = int(m.group(1))
             guppyLink = m.group(0)
             if docId in linkDict:
@@ -78,6 +78,24 @@ def getDocUris(docList):
         linkDict[d.num] = '/' + str(d.relPath).replace('\\','/').lower()
     return linkDict
 
+class Comment:
+    def __init__(self, incNum):
+        self.incFile = IncFile(incNum)
+        self.incNum = incNum
+        self.num = int(self.incFile.fields["fielda1"].txt)
+        self.article = int(self.incFile.fields["fielda2"].txt)
+        self.date = self.incFile.createDate
+        self.author = self.incFile.author
+        self.email = self.incFile.email
+        self.html = self.incFile.fields["fieldc1"].txt
+        self.md = html2text.html2text(self.html)
+        self.mailNonDisclosure = self.incFile.fields["fieldd1"].txt
+
+    def getMd(self):
+        md = f'{{{{< comment date="{self.date}" author="{self.author}" email="{self.email}" mailNonDisclosure="{self.mailNonDisclosure}" >}}}}\n'
+        md += f'{self.md}\n'
+        md += f'{{{{< /comment >}}}}\n'
+        return md.strip()
 
 class IncFile:
     class Field:
@@ -109,6 +127,16 @@ class IncFile:
             modeMatch = re.search(r'^\$moddate = \'(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)', l)
             if modeMatch:
                 self.modDate = f"{modeMatch.group(1)}-{modeMatch.group(2)}-{modeMatch.group(3)}T{modeMatch.group(4)}:{modeMatch.group(5)}:00+01:00"
+                continue
+
+            authorMatch = re.search(r'^\$author = stripslashes\(\'(.*?)\'\);$', l)
+            if authorMatch:
+                self.author = authorMatch.group(1)
+                continue
+
+            mailMatch = re.search(r'^\$email = stripslashes\(\'(.*?)\'\);$', l)
+            if mailMatch:
+                self.email = mailMatch.group(1)
                 continue
 
             fieldBegin = re.search(r'^\$(field[abcd][12]) = stripslashes\(\'(.*?)(\'\);)?$', l)
@@ -251,17 +279,16 @@ class GuppyDoc:
             self.mdEn = self.mdEn.replace(r.relPath, '')
 
     def findTagsAndCategories(self):
+        if len(self.relPath._parts)>=1:
+            self.categories.append(self.relPath._parts[0].replace('_',' '))
         if len(self.relPath._parts)>=2:
             self.categories.append(self.relPath._parts[1].replace('_',' '))
-        if len(self.relPath._parts)>=3:
-            self.categories.append(self.relPath._parts[2].replace('_',' '))
         with open(Path(DATA_PATH) / "dbdocs/index/kw.dtb", encoding="utf8") as f:
             docs = [l.split('||') for l in f.readlines()]
         doc = next((d for d in docs if int(d[0])==self.num), [])
         if doc:
             self.tagsFr = [t.strip() for t in doc[3].split(';')]
             self.tagsEn = [t.strip() for t in doc[4].split(';')]
-
 
 class Article(GuppyDoc):
     def __init__(self, indexLine):
@@ -296,6 +323,7 @@ class Article(GuppyDoc):
         self.targetPath /= self.relPath
         self.useResourcesLocally()
         self.findTagsAndCategories()
+        self.lookForComments()
         self.createHugoPageBundle()
         self.moveResources()
 
@@ -319,7 +347,19 @@ class Article(GuppyDoc):
                 self.relPath /= title2Folder(self.titleFr)
                 return
         # articles with no menu
-        self.relPath /= "orphan_articles"
+        self.menuLevel1Fr = "index"
+        self.relPath /= cleanPathElement(self.menuLevel1Fr)
+        self.relPath /= title2Folder(self.titleFr)
+
+    def lookForComments(self):
+        with open(Path(DATA_PATH) / "dbdocs/index/ra.dtb", encoding="utf8") as f:
+            index = [l.split('||') for l in f.readlines()]
+        self.comments = [Comment(int(idx[0])) for idx in index if int(idx[1])==self.num] 
+        self.comments.sort(key=lambda x: x.num)
+        self.hasComments = len(self.comments) > 0
+        for c in self.comments:
+            self.mdFr += '\n' + c.getMd()
+            self.mdEn += '\n' + c.getMd()
 
     def __str__(self):
         s = f"{self.num};{self.titleFr};{self.relPath};{len(self.resources)};"
@@ -328,6 +368,7 @@ class Article(GuppyDoc):
         s += f"{'photorama'if self.hasPhotorama else '        '};"
         s += f"{'slideshow'if self.hasSlideshow else '         '};"
         s += f"{'audio'if self.hasAudio else '     '};"
+        s += f"{'comments'if self.hasComments else '        '};"
         return(s)
 
 class News(GuppyDoc):
@@ -409,8 +450,6 @@ class Download(GuppyDoc):
         self.categories.append(self.incFile.fields["fielda1"].txt)
         self.categories.append(self.incFile.fields["fielda2"].txt)
 
-
-
     def __str__(self):
         s = f"{self.num};{self.titleFr};{self.relPath};{len(self.resources)};"
         s += f"{'youtube'if self.hasYoutube else '       '};"
@@ -427,10 +466,16 @@ class Galery:
             elements = dtbLine.split('||')
             self.num = elements[0]
             self.file = elements[2]
-            self.w = int(elements[7])
-            self.h = int(elements[8])
-            self.captionFr = elements[5]
-            self.captionEn = elements[6]
+        #    self.w = int(elements[7])
+        #    self.h = int(elements[8])
+            self.captionFr = elements[5].replace('"', '').strip()
+            self.captionEn = elements[6].replace('"', '').strip()
+        def getMd(self, lang):
+            md = f'{{{{< figure link="{self.file}"\n'
+            md += f'    caption="{self.captionFr if lang=="fr" else self.captionEn}" >}}}}\n'
+            return md
+        def moveResource(self, sourcePath, targetResourcePath):
+            shutil.copyfile(sourcePath / self.file, targetResourcePath / self.file)
 
     def __init__(self, indexLine):
         elements = indexLine.split('||')
@@ -439,32 +484,89 @@ class Galery:
         self.titleFr = cleanHtml(elements[2])
         self.titleEn = cleanHtml(elements[3])
         self.num = int(elements[4])
-        creadateMatch = re.search(r'^\$creadate = \'(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)', elements[5])
+        creadateMatch = re.search(r'(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)', elements[5])
         if creadateMatch:
             self.date = f"{creadateMatch.group(1)}-{creadateMatch.group(2)}-{creadateMatch.group(3)}T{creadateMatch.group(4)}:{creadateMatch.group(5)}:00+01:00"
         self.sourcePath = Path(PHOTO_PATH) / f'gal_{self.num}'
+        self.relPath = Path("galleries") / f"gal_{self.num:03}"
+        self.targetPath = Path(CONTENT_PATH) / self.relPath
         assert os.path.isdir(self.sourcePath), f"The Galery folder does not exist : {self.sourcePath}"
         with open(self.sourcePath / f'gal_{self.num}.dtb', encoding="utf8") as f:
             self.photos = [Galery.Photo(l) for l in f.readlines()]
-        pass
+        if len(self.photos) >0:
+            self.featuredImage = self.photos[0].file
+        self.createHugoPageBundle()
+        self.moveResources()
+
+    def createHugoPageBundle(self):
+        os.makedirs(self.targetPath, exist_ok=True)
+        with open(self.targetPath / "index.md", encoding='utf-8', mode='w+') as f:
+            f.write('+++\n')
+            f.write(f'title = "{self.titleFr}"\n')
+            f.write(f'description = "Galerie {self.titleFr}"\n')
+            f.write(f'author = "Christophe Mineau"\n')
+            f.write(f'date = {self.date}\n')
+            if self.featuredImage:
+                f.write(f'featured = "{self.featuredImage}"\n')
+            f.write(f'draft = "false"\n')
+            f.write(f'categories = [ "Gallerie"]\n')
+            f.write(f'tags = ["{self.categoryFr}"]\n')
+            f.write('+++\n')
+            f.write(f'# Galerie {self.titleFr}\n')
+            f.write(f'<p>Bienvenue dans la galerie {self.titleFr}.</p>\n') # include explicitely the <p></p> for Hugo to limit the summary to the prist found paragraph
+
+            f.write('{{< detailed-gallery >}}\n')
+            for p in self.photos:
+                f.write(p.getMd('fr'))
+            f.write('{{< /detailed-gallery >}}\n')
+            f.write('\n\n****\nAll contents under Creative Commons BY-NC-SA license.\n')
+        with open(self.targetPath / "index.en.md", encoding='utf-8', mode='w+') as f:
+            f.write('+++\n')
+            f.write(f'title = "{self.titleEn}"\n')
+            f.write(f'description = "Galerie {self.titleEn}"\n')
+            f.write(f'author = "Christophe Mineau"\n')
+            f.write(f'date = {self.date}\n')
+            if self.featuredImage:
+                f.write(f'featured = "{self.featuredImage}"\n')
+            f.write(f'draft = "false"\n')
+            f.write(f'categories = ["Galery"]\n')
+            f.write(f'tags = ["{self.categoryEn}"]\n')
+            f.write('+++\n')
+            f.write(f'# Galery {self.titleEn}\n')
+            f.write(f'<p>Welcome to the galery {self.titleEn}.</p>\n')
+            f.write('{{< detailed-gallery >}}\n')
+            for p in self.photos:
+                f.write(p.getMd('en'))
+            f.write('{{< /detailed-gallery >}}\n')
+            f.write('\n\n****\nAll contents under Creative Commons BY-NC-SA license.\n')
+
+    def moveResources(self):
+        for p in self.photos:
+            p.moveResource(self.sourcePath, self.targetPath)
+
+    def __str__(self):
+        s = f"{self.num};{self.titleFr};{self.relPath};{len(self.photos)};"
+        s += ";"*5
+        return(s)
+
 
 ################# main ###################
 #
 # navigate through the index folder
-""" with open(Path(DATA_PATH) / "dbdocs/index/ar.dtb", encoding="utf8") as f:
+with open(Path(DATA_PATH) / "dbdocs/index/ar.dtb", encoding="utf8") as f:
     articles = [Article(l) for l in f.readlines()]
 
 with open(Path(DATA_PATH) / "dbdocs/index/ne.dtb", encoding="utf8") as f:
     news = [News(l) for l in f.readlines()]
 
 with open(Path(DATA_PATH) / "dbdocs/index/dn.dtb", encoding="utf8") as f:
-    downloads = [Download(l) for l in f.readlines()] """
+    downloads = [Download(l) for l in f.readlines()] 
 
 with open(Path(DATA_PATH) / "dbdocs/index/ph.dtb", encoding="utf8") as f:
     galeries = [Galery(l) for l in f.readlines()]
 
-# Set the correct links, relative to the site
-uriDict = getDocUris(articles + news + downloads)
+ # Set the correct links, relative to the site
+uriDict = getDocUris(articles + news + downloads + galeries)
 fixLinks(articles + news + downloads, uriDict)
 
 print("*** Articles ***")
@@ -478,3 +580,7 @@ for n in news:
 print("*** Downloads ***")
 for d in downloads:
     print(d)
+
+print("*** Galeries ***")
+for g in galeries:
+    print(g)

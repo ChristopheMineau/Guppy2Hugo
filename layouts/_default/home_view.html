@@ -1,0 +1,22 @@
+<article class="post">   <!-- HOME page -->
+  {{ .Render "header" }}
+  <div class="content">
+    {{ .Render "featured" }}
+    {{ .Content }}  		<!-- Content of home _index.md  --> 
+  </div>
+  <div class="responsive-tiles-iframe-container">  <!-- Tile grid iframe for main sections  --> 
+    <iframe class="responsive-tiles-iframe" src="{{ "/tiles/home/" | relLangURL }}">No iframe supported</iframe>
+  </div> 
+</article>
+
+{{/*
+  {{ $sectionPages := where .Site.Pages "Type" "in" site.Params.mainSections }}  <!-- Les sections definies dans config.toml -->
+  {{ $sectionPages := slice (.GetPage "/Lutherie") (.GetPage "/Travail_Du_Bois") }} 
+  {{ $paginator := .Paginate $sectionPages }}                                           <!-- Home contient une liste des sections -->
+  {{ range $sectionPages }}
+     {{ printf "Dir=%s Type=%s Kind=%v title=%s Isnode=%t Ispage=%t Issection=%t \n" .Dir .Type .Kind .Title .IsNode .IsPage .IsSection}}
+  {{ end }}   
+  {{ range $paginator.Pages }}
+    {{ .Render "content-list" }}   <!-- Aperçu des pages de garde des sections -->
+  {{ end }}
+  */}}

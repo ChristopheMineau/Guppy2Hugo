@@ -34,10 +34,6 @@ possible parameters :
 
 optional thumbnails should be names <image>-thumb.ext 
 -->
-{{- if not (.Page.Scratch.Get "myEasyGalleryCssLoaded") -}}
-   {{- .Page.Scratch.Set "myEasyGalleryCssLoaded" 1 -}}
-   <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
-{{- end -}}
 
 <div class="gallery caption-position-{{ with .Get "caption-position" | default "bottom" }}{{.}}{{end}} caption-effect-{{ with .Get "caption-effect" | default "slide" }}{{.}}{{end}} hover-effect-{{ with .Get "hover-effect" | default "zoom" }}{{.}}{{end}} {{ if ne (.Get "hover-transition") "none" }}hover-transition{{end}}" itemscope itemtype="http://schema.org/ImageGallery"> 
 {{- with .Inner -}}
