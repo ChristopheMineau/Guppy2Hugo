@@ -88,14 +88,14 @@ class Comment:
         self.author = self.incFile.author
         self.email = self.incFile.email
         self.html = self.incFile.fields["fieldc1"].txt
-        self.md = html2text.html2text(self.html)
+        self.md = html2text.html2text(self.html).strip()
         self.mailNonDisclosure = self.incFile.fields["fieldd1"].txt
 
     def getMd(self):
         md = f'{{{{< comment date="{self.date}" author="{self.author}" email="{self.email}" mailNonDisclosure="{self.mailNonDisclosure}" >}}}}\n'
         md += f'{self.md}\n'
-        md += f'{{{{< /comment >}}}}\n'
-        return md.strip()
+        md += f'{{{{< /comment >}}}}\n\n'
+        return md
 
 class IncFile:
     class Field:
