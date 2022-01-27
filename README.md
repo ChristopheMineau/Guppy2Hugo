@@ -57,16 +57,16 @@ La navigation par catégorie / tag / ou autre taxonomies (voir doc Hugo) est un 
   * skins
   * gyppy2hugo.py
 
-  - ouvrir le fichier guppy2hugo.py et mettre à jour les constantes de chemin au début du fichier :
-   * DATA_PATH = "....travail/data"
-   * FILE_PATH = "....travail/file"
-   * PHOTO_PATH = "....travail/photo"
-   * SOURCE_PATH = "....travail/LBN2Hugo/"
-   * IMG_PATH = "....travail/static/img"
-   * CONTENT_PATH = "....travail/content"
+- ouvrir le fichier guppy2hugo.py et mettre à jour les constantes de chemin au début du fichier :
+  * DATA_PATH = "....travail/data"
+  * FILE_PATH = "....travail/file"
+  * PHOTO_PATH = "....travail/photo"
+  * SOURCE_PATH = "....travail/LBN2Hugo/"
+  * IMG_PATH = "....travail/static/img"
+  * CONTENT_PATH = "....travail/content"
 
-  - Dans un terminal dans ce répertoire, simplement lancer :
-   * python guppy2hugo.py
+- Dans un terminal dans ce répertoire, simplement lancer :
+  * python guppy2hugo.py
 
 Le script va créer le répertoire content avec l'arborescence nécessaire et déplacer toutes les ressources utiles vers ce répertoire content.
 
