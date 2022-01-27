@@ -4,7 +4,7 @@ ___
 Des outils pour convertir un site web [Guppy CMS](https://www.freeguppy.org/) en un site statique [Hugo](https://gohugo.io/).
 
 # Documentation
-Je poursuit cette documentation uniquement en français, je pense que la majorité des utilisateurs de Guppy sont de langue française.  
+Je poursuis cette documentation uniquement en français, je pense que la majorité des utilisateurs de Guppy sont de langue française.  
 In case you need a French translation, please try an automated translator, and you can also post an issue here, in English, I will answer you.
 
 # Pourquoi ce projet
