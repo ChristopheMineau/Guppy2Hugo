@@ -83,7 +83,6 @@ class Comment:
         self.incFile = IncFile(incNum)
         self.incNum = incNum
         self.num = int(self.incFile.fields["fielda1"].txt)
-        self.article = int(self.incFile.fields["fielda2"].txt)
         self.date = self.incFile.createDate
         self.author = self.incFile.author
         self.email = self.incFile.email
@@ -553,6 +552,19 @@ class Galery:
         s += ";"*5
         return(s)
 
+class Guestbook:
+    def __init__(self):
+        with open(Path(DATA_PATH) / "dbdocs/docid.dtb", encoding="utf8") as f:
+            docs =  [l.split('||') for l in f.readlines()] 
+        self.comments = [Comment(int(d[1])) for d in docs if d[0]=='gb']
+
+    def getMd(self):
+        md = '{{< guppy-comment-block >}}\n'
+        for c in self.comments:
+            md += c.getMd()
+        md += '{{< /guppy-comment-block >}}\n\n'
+        return md
+
 
 ################# main ###################
 #
@@ -573,6 +585,8 @@ with open(Path(DATA_PATH) / "dbdocs/index/ph.dtb", encoding="utf8") as f:
 uriDict = getDocUris(articles + news + downloads + galeries)
 fixLinks(articles + news + downloads, uriDict)
 
+guesbook = Guestbook()
+
 print("*** Articles ***")
 for a in articles:
     print(a)
@@ -588,3 +602,6 @@ for d in downloads:
 print("*** Galeries ***")
 for g in galeries:
     print(g)
+
+print("*** Guestbook ***")
+print(guesbook.getMd())
