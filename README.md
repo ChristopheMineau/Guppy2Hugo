@@ -40,7 +40,7 @@ Tous les fichiers utilisés par l'article sont déplacés dans le répertoire de
 - Liens internes : tous les liens internes pointant vers un article ou une news Guppy sont transformés vers l'url pointant sur le même article dans Hugo.
 - Commentaires utilisateur : Les commentaires utilisateurs sont récupérés et ajoutés en fin de chaque article. 
 - Livre d'or : le livre d'or est récupéré et transformé en commentaire que l'on peut insérer où on le veut, en bas de la page home ou dans la page about par exemple ou dans une nouvelle page livre d'or si on préfère.
-- Les titres principaux sont transformés en catégories associées aux articles et news. Les tags sont récupérés et ajoutés comme tags aux pages Hugo.
+- Les noms de répertoires principaux sont transformés en catégories associées aux articles et news. Les tags sont récupérés et ajoutés comme tags aux pages Hugo.
 La navigation par catégorie / tag / ou autre taxonomies (voir doc Hugo) est un concept très moderne et bien valorisé par la pluspart des thèmes Hugo.
 
 # Comment faire
