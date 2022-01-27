@@ -10,7 +10,7 @@ In case you need an English translation, please try an automated translator, and
 # Pourquoi ce projet
 Ce projet est un travail personnel qui n'a pas vocation à être universel et traiter tous les cas de figures d'un site Guppy.
 J'ai développé cet outil pour convertir mon site datant déjà d'une 12aine d'années et qui devenait vieillissant. La taille grossissante du site, le nombre de photos et documents qu'il contenait amenait de forts ralentissements au chargement des pages.
-Dernièrement, j'avais un peu délaissé les mises à jour de mon site, faute de temps à vrai dire, la rédaction d'un article documenté avec des photos commentées, des vodéos, et en deux langues, prenant sous Guppy un certain temps.
+Dernièrement, j'avais un peu délaissé les mises à jour de mon site, faute de temps car à vrai dire, la rédaction d'un article bien documenté avec des photos commentées, des vodéos, et en deux langues, prenait sous Guppy un certain temps.
 
 
 J'ai cherché assez longtemps vers quelle solution je pouvais me tourner et j'ai opté pour la soltion d'un site statique -c'est à dire sans php ni base de donnée- ce qui procure une excellente réactivité.
