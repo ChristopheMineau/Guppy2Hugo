@@ -34,7 +34,7 @@ Voici les fonctionalités que j'utilisais sous Guppy et qui ont toutes étées p
 - Articles : Les articles deviennent des pages Hugo. L'arborescence des articles dans Hugo est calquée sur l'arborescence des menus dans Guppy.
 Tous les fichiers utilisés par l'article sont déplacés dans le répertoire de l'article.
 - News : Elles sont placées de même sous la catégorie Blog
-- - Téléchargements : Sont créés sous forme d'articles. Les fichiers sont déplacés dans le répertoire de l'article.
+- Téléchargements : Sont créés sous forme d'articles. Les fichiers sont déplacés dans le répertoire de l'article.
 - Galleries : toutes les galleries Guppy sont transportées sans un répertoire Galleries navigable. Les fonctionalités des galleries guppy, avec commentaires, vignettes optionnelles, sont rendures.
 - Vidéos : le code des vidéos embarquées est détecté et adapté au format md de Hugo.
 - Audio : de même, les balises audio sont adaptées
