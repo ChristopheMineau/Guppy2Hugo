@@ -357,9 +357,13 @@ class Article(GuppyDoc):
         self.comments = [Comment(int(idx[0])) for idx in index if int(idx[1])==self.num] 
         self.comments.sort(key=lambda x: x.num)
         self.hasComments = len(self.comments) > 0
+        self.mdFr += '\n{{< guppy-comment-block >}}\n'
+        self.mdEn += '\n{{< guppy-comment-block >}}\n'
         for c in self.comments:
-            self.mdFr += '\n' + c.getMd()
-            self.mdEn += '\n' + c.getMd()
+            self.mdFr += c.getMd()
+            self.mdEn += c.getMd()
+        self.mdFr += '{{< /guppy-comment-block >}}\n'
+        self.mdEn += '{{< /guppy-comment-block >}}\n'
 
     def __str__(self):
         s = f"{self.num};{self.titleFr};{self.relPath};{len(self.resources)};"

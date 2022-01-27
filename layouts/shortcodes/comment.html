@@ -1,0 +1,18 @@
+<!--
+Put this file in /layouts/shortcodes/comment.html
+ by C.Mineau
+
+This shortcode generates an individual comment, to display the legacy Guppy user comments
+at the bottom of the articles.
+usage : (remove blaks between brackets)
+{ {< comment date="2021-01-05T19:00:00+01:00" author="Fereydoun" email="Fereydoun110@gmail.com" mailNonDisclosure="" >} }
+سلام ممنون بسيار جامع و كامل
+{ {< /comment >} }
+-->
+
+
+<div class="guppyComment">
+    <div class="header">par <b>{{ .Get "author" }}</b>&emsp; &emsp; le {{ .Get "date" }}</div>
+    <div class="body">{{.Inner}}</div>
+	<hr>
+</div>
