@@ -5,7 +5,7 @@ Des outils pour convertir un site web [Guppy CMS](https://www.freeguppy.org/) en
 
 # Documentation
 Je poursuis cette documentation uniquement en français, je pense que la majorité des utilisateurs de Guppy sont de langue française.  
-In case you need a French translation, please try an automated translator, and you can also post an issue here, in English, I will answer you.
+In case you need an English translation, please try an automated translator, and you can also post an issue here, in English, I will answer you.
 
 # Pourquoi ce projet
 Ce projet est un travail personnel qui n'a pas vocation à être universel et traiter tous les cas de figures d'un site Guppy.
