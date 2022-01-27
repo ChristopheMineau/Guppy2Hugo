@@ -70,8 +70,11 @@ La navigation par catégorie / tag / ou autre taxonomies (voir doc Hugo) est un 
 
 Le script va créer le répertoire content avec l'arborescence nécessaire et déplacer toutes les ressources utiles vers ce répertoire content.
 
+Le script affiche en résultat un récapitulatif au format CSV des articles, news, galleries, téléchargements crées. On peu aisément conserver ces données dans un tableur ce donne une cartographie du site très pratique pour tester les différentes pages et fonctionalutés.
+La dernière partie des informations affichées représente le code du livre d'or, à conserver et insérer dans une page à sa convenance, home par exemple.
+
 Le répertoire content sera ensuite à intégrer dans votre site Hugo, voir la doc Hugo pour comprendre ce qu'est le répertoire content.
-Le script génère du code en utilisant des shortcodes spécifiques, ceux ci se trouvent dans le répertoire layouts fourni avec ce projet, ainsi que quelques styles nécessaire dans le répertoire static.
+Le script génère du code en utilisant des shortcodes spécifiques, ceux ci se trouvent dans le répertoire layouts fourni avec ce projet, ainsi que quelques styles nécessaires dans le répertoire static.
 
 # Limitations du support
 Il va de soit que je partage ici un travail personnel qui m'a permis de convertir mon site [La Belle Note](https://www.labellenote.fr) et que vos besoins sont sans doute différents des miens.
