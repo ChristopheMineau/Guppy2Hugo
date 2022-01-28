@@ -1,8 +1,0 @@
-  {{ $paginator := .Paginate .Data.Pages }}   <!-- Aperçu de la liste des articles de la section -->       
-																	               	 
-  <h1>LIST VIEW</h1>
-  {{ .Content }}                                                             
-  {{ range $paginator.Pages }}
-    {{ .Render "content-list" }}
-  {{ end }}
-
