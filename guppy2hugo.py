@@ -6,12 +6,11 @@ import re
 import os
 import shutil
 
-DATA_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/data"
-FILE_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/file"
-PHOTO_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/photo"
-SOURCE_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/"
-IMG_PATH = "C:/Users/Papou/Documents/www/Hugo/Sites/LaBelleNote/static/img"
-CONTENT_PATH = "C:/Users/Papou/Documents/www/Hugo/LBN2Hugo/content"
+DATA_PATH = Path.cwd() / "../data"
+FILE_PATH = Path.cwd() / "../file"
+PHOTO_PATH = Path.cwd() / "../photo"
+SOURCE_PATH = Path.cwd() / "../"
+CONTENT_PATH = Path.cwd() / "../content"
 
 def cleanHtml(html):
     m = re.search('(<!\-*\d+\-*>)?(.*)', html)
