@@ -79,7 +79,7 @@ Le script génère du code en utilisant des shortcodes spécifiques, ceux ci se 
 
 # Limitations du support
 Il va de soit que je partage ici un travail personnel qui m'a permis de convertir mon site [La Belle Note](https://www.labellenote.fr) et que vos besoins sont sans doute différents des miens.
-Je vous laisse libre de forker ce projet et de le faire v=évoluer à votre guise.
+Je vous laisse libre de forker ce projet et de le faire évoluer à votre guise.
 Il est bien sûr nécessaire d'avoir une bonne connaissance du développement en Python, et du développement web en général, ainsi que de Hugo et Guppy.
 Je serai ravi de répondre à vos questions, mais je n'apporterai pas de support à vos projets de conversion, faut de temps.
 
