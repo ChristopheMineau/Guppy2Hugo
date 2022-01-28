@@ -48,7 +48,7 @@ La navigation par catégorie / tag / ou autre taxonomies (voir doc Hugo) est un 
 - Il vous faut une installation récente de Python 3
 - au préalable, lire la doc, regarder les vidéos, essayer de bien maîtriser Hugo avant de commencer, c'est indispensable. Choisir un thème qui convienne à vos besoin. J'ai choisi "Future-imperfect-slim" personnellement.
 - créer un répertoire de travail et y ramener les répertoires essentiels de Guppy qui contiennent les données et images nécessaires pour la recopie.
-- cloner ce repo dans ce répertoire travail. L'organisation doit ressemble à :
+- cloner ce repo dans ce répertoire travail. L'organisation doit ressembler à :
 * travail
   * file
   * data
