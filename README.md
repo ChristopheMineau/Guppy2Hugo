@@ -71,7 +71,7 @@ La navigation par catégorie / tag / ou autre taxonomies (voir doc Hugo) est un 
 
 Le script va créer le répertoire content avec l'arborescence nécessaire et déplacer toutes les ressources utiles vers ce répertoire content.
 
-Le script affiche en résultat un récapitulatif au format CSV des articles, news, galleries, téléchargements crées. On peu aisément conserver ces données dans un tableur ce qui donne une cartographie du site très pratique pour tester les différentes pages et fonctionalutés.
+Le script affiche en résultat un récapitulatif au format CSV des articles, news, galleries, téléchargements crées. On peu aisément conserver ces données dans un tableur ce qui donne une cartographie du site très pratique pour tester les différentes pages et fonctionalités.
 La dernière partie des informations affichées représente le code du livre d'or, à conserver et insérer dans une page à sa convenance, home par exemple.
 
 Le répertoire content sera ensuite à intégrer dans votre site Hugo, voir la doc Hugo pour comprendre ce qu'est le répertoire content.
