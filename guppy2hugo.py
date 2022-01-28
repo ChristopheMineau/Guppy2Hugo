@@ -566,41 +566,43 @@ class Guestbook:
 
 
 ################# main ###################
-#
+
+if __name__ == "__main__":
+
 # navigate through the index folder
-with open(Path(DATA_PATH) / "dbdocs/index/ar.dtb", encoding="utf8") as f:
-    articles = [Article(l) for l in f.readlines()]
+    with open(Path(DATA_PATH) / "dbdocs/index/ar.dtb", encoding="utf8") as f:
+        articles = [Article(l) for l in f.readlines()]
 
-with open(Path(DATA_PATH) / "dbdocs/index/ne.dtb", encoding="utf8") as f:
-    news = [News(l) for l in f.readlines()]
+    with open(Path(DATA_PATH) / "dbdocs/index/ne.dtb", encoding="utf8") as f:
+        news = [News(l) for l in f.readlines()]
 
-with open(Path(DATA_PATH) / "dbdocs/index/dn.dtb", encoding="utf8") as f:
-    downloads = [Download(l) for l in f.readlines()] 
+    with open(Path(DATA_PATH) / "dbdocs/index/dn.dtb", encoding="utf8") as f:
+        downloads = [Download(l) for l in f.readlines()] 
 
-with open(Path(DATA_PATH) / "dbdocs/index/ph.dtb", encoding="utf8") as f:
-    galeries = [Galery(l) for l in f.readlines()]
+    with open(Path(DATA_PATH) / "dbdocs/index/ph.dtb", encoding="utf8") as f:
+        galeries = [Galery(l) for l in f.readlines()]
 
- # Set the correct links, relative to the site
-uriDict = getDocUris(articles + news + downloads + galeries)
-fixLinks(articles + news + downloads, uriDict)
+    # Set the correct links, relative to the site
+    uriDict = getDocUris(articles + news + downloads + galeries)
+    fixLinks(articles + news + downloads, uriDict)
 
-guesbook = Guestbook()
+    guesbook = Guestbook()
 
-print("*** Articles ***")
-for a in articles:
-    print(a)
+    print("*** Articles ***")
+    for a in articles:
+        print(a)
 
-print("*** News ***")
-for n in news:
-    print(n)
+    print("*** News ***")
+    for n in news:
+        print(n)
 
-print("*** Downloads ***")
-for d in downloads:
-    print(d)
+    print("*** Downloads ***")
+    for d in downloads:
+        print(d)
 
-print("*** Galeries ***")
-for g in galeries:
-    print(g)
+    print("*** Galeries ***")
+    for g in galeries:
+        print(g)
 
-print("*** Guestbook ***")
-print(guesbook.getMd())
+    print("*** Guestbook ***")
+    print(guesbook.getMd())
