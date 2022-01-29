@@ -21,7 +21,7 @@ Les données sont stockées avec l'article dans un seul répertoire, aucune gest
 - Génération des articles au format MD. Ce format est simplissime et permet de rédiger très rapidement et très simplement des contenus sans aucun souci de mise en page (comme le présent texte par exemple). Un fichier par langue.
 
 Ainsi, la rédaction d'un nouvel article sous Hugo se limite aux choses extêmement simples suivantes :
-- hugo new chemin/chemin/mon article/_index.md
+- ```hugo new chemin/chemin/mon article/_index.md```
 - coller les photos et documents dans le répertoire chemin/chemin/mon article/
 - ouvrir _index.md et taper son code md
 - et c'est tout !
