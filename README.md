@@ -61,7 +61,7 @@ La navigation par catégorie / tag / ou autre taxonomies (voir doc Hugo) est un 
 
 
 - Dans un terminal dans ce répertoire, simplement lancer :
-  * python Guppy2Hugo/guppy2hugo.py
+``` python Guppy2Hugo/guppy2hugo.py```
 
 Le script va créer le répertoire content avec l'arborescence nécessaire et déplacer toutes les ressources utiles vers ce répertoire content.
 
