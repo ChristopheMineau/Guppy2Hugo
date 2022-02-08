@@ -11,6 +11,7 @@ FILE_PATH = Path.cwd() / "../file"
 PHOTO_PATH = Path.cwd() / "../photo"
 SOURCE_PATH = Path.cwd() / "../"
 CONTENT_PATH = Path.cwd() / "../content"
+HTACCESS_PATH = Path.cwd() / "../htAccess.txt"
 
 def cleanHtml(html):
     m = re.search('(<!\-*\d+\-*>)?(.*)', html)
@@ -183,6 +184,8 @@ class GuppyDoc:
         self.hasPhotorama = False
         self.hasSlideshow = False
         self.hasAudio = False
+        self.oldUri = ""
+        self.newUri = ""
     
     def inspectHtml(self, html):
         if 'photorama' in html:
@@ -255,8 +258,6 @@ class GuppyDoc:
             f.write(f'{self.mdEn}\n')
 
     def findPageResources(self):
-        if 'larinette' in self.titleFr:
-            debug=1
         for m in re.finditer('\(((\w+\/)*?)([\w\.]+\.(JPG|jpg|Jpg|PNG|png|Png|gif|GIF|Gif))\)', self.mdFr):
             self.resources.append(self.Resource(m.group(1), m.group(3)))
         # identify featured image
@@ -287,6 +288,10 @@ class GuppyDoc:
         if doc:
             self.tagsFr = [t.strip() for t in doc[3].split(';')]
             self.tagsEn = [t.strip() for t in doc[4].split(';')]
+
+    def setUris(self):
+        self.oldUri = f"pg={self.num}"
+        self.newUri = str(self.relPath).lower().replace('\\','/')
 
 class Article(GuppyDoc):
     def __init__(self, indexLine):
@@ -324,6 +329,7 @@ class Article(GuppyDoc):
         self.lookForComments()
         self.createHugoPageBundle()
         self.moveResources()
+        self.setUris()
 
     def getMenuTree(self):
         with open(Path(DATA_PATH) / "dbdocs/index/arom.dtb", encoding="utf8") as f:
@@ -362,6 +368,13 @@ class Article(GuppyDoc):
             self.mdEn += c.getMd()
         self.mdFr += '{{< /guppy-comment-block >}}\n'
         self.mdEn += '{{< /guppy-comment-block >}}\n'
+
+    def getHtaccess(self):
+        h =  f'RewriteCond %{{QUERY_STRING}} "lng=fr&{self.oldUri}"\n'
+        h += f'RewriteRule ^articles.php /{self.newUri}? [QSD,R=301,L]\n'
+        h += f'RewriteCond %{{QUERY_STRING}} "lng=en&{self.oldUri}"\n'
+        h += f'RewriteRule ^articles.php /en/{self.newUri}? [QSD,R=301,L]\n'
+        return h
 
     def __str__(self):
         s = f"{self.num};{self.titleFr};{self.relPath};{len(self.resources)};"
@@ -606,3 +619,11 @@ if __name__ == "__main__":
 
     print("*** Guestbook ***")
     print(guesbook.getMd())
+
+    # generate .htaccess rewrite rules
+    with open(HTACCESS_PATH, "w") as h:
+        h.write("# These are rewrite rules to redirect legacy Guppy urls to new Hugo ones\n")
+        h.write("RewriteEngine on\n")
+        for a in articles:
+            h.write(a.getHtaccess()) 
+    print(f"*** .htaccess inputs written to {HTACCESS_PATH} ***")

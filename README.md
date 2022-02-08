@@ -43,6 +43,7 @@ Tous les fichiers utilisés par l'article sont déplacés dans le répertoire de
 - Livre d'or : le livre d'or est récupéré et transformé en commentaire que l'on peut insérer où on le veut, en bas de la page home ou dans la page about par exemple ou dans une nouvelle page livre d'or si on préfère.
 - Les noms de répertoires principaux sont transformés en catégories associées aux articles et news. Les tags sont récupérés et ajoutés comme tags aux pages Hugo.
 La navigation par catégorie / tag / ou autre taxonomies (voir doc Hugo) est un concept très moderne et bien valorisé par la pluspart des thèmes Hugo.
+- URL rewriting : le script génère les directives d'url rewriting à insérer dans le .htaccess du nouveau site de manière à faire pointer les anciennes URL Guppy vers les nouvelles Hugo (pour les articles seulement).
 
 # Comment faire
 - Il vous faut une installation récente de Python 3
@@ -70,6 +71,8 @@ La dernière partie des informations affichées représente le code du livre d'o
 
 Le répertoire content sera ensuite à intégrer dans votre site Hugo, voir la doc Hugo pour comprendre ce qu'est le répertoire content.
 Le script génère du code en utilisant des shortcodes spécifiques, ceux ci se trouvent dans le répertoire layouts fourni avec ce projet, ainsi que quelques styles nécessaires dans le répertoire static.
+
+Enfin, le script génère une section à insérer dans votre fichier .htaccess et qui permet de faire pointer les anciennes URL Guppy vers les nouvelles url correspondantes du site Hugo. Ainsi, vous ne perdrez pas votre référencement Google et toutes les adresses que vous avez pu partager dans les réseaux sociaux ou forums restent valides.
 
 # Limitations du support
 Il va de soit que je partage ici un travail personnel qui m'a permis de convertir mon site [La Belle Note](https://www.labellenote.fr) et que vos besoins sont sans doute différents des miens.
