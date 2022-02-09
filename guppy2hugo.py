@@ -370,9 +370,9 @@ class Article(GuppyDoc):
         self.mdEn += '{{< /guppy-comment-block >}}\n'
 
     def getHtaccess(self):
-        h =  f'RewriteCond %{{QUERY_STRING}} "lng=fr&{self.oldUri}"\n'
+        h =  f'RewriteCond %{{QUERY_STRING}} "lng=fr&{self.oldUri}(&|$)"\n'
         h += f'RewriteRule ^articles.php /{self.newUri}? [QSD,R=301,L]\n'
-        h += f'RewriteCond %{{QUERY_STRING}} "lng=en&{self.oldUri}"\n'
+        h += f'RewriteCond %{{QUERY_STRING}} "lng=en&{self.oldUri}(&|$)"\n'
         h += f'RewriteRule ^articles.php /en/{self.newUri}? [QSD,R=301,L]\n'
         return h
 
